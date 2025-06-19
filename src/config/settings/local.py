@@ -12,11 +12,11 @@ DEBUG = True
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'sample',
+        'NAME': 'timesale_db',
         'USER': 'root',
         'PASSWORD': '1234',
         'HOST': '127.0.0.1',
-        'PORT': '9901',
+        'PORT': '39909',
         'OPTIONS': {
             'charset': 'utf8mb4'
         },

@@ -1,0 +1,18 @@
+version: '3'
+services:
+
+  timesale_db:
+    image: mysql:8.0.40-debian
+    platform: linux/amd64
+    ports:
+      - "39909:3306"
+    expose:
+      - "39909"
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: timesale_db
+    volumes:
+      - "./sqls/:/docker-entrypoint-initdb.d/"
+    command:
+      - --character-set-server=utf8
+      - --collation-server=utf8_general_ci
