@@ -19,6 +19,13 @@ class Product(TimestampedModel):
 
     @classmethod
     def init_entity(cls, name: str, price: int, description: str):
+        if name is None:
+            raise Exception("Product Name is Empty")
+        if price is None:
+            raise Exception("Product Price is Empty")
+        if description is None:
+            raise Exception("Product Description is Empty")
+
         return cls(
             name=name,
             price=price,
