@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 
-class ProductService:
+class IProductService:
 
     @abstractmethod
     def create_product(self, name: str, price: int, description: str):
