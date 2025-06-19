@@ -1,0 +1,1 @@
+# 7. Functional Requirements (성능 요구사항)
