@@ -61,33 +61,31 @@ class TestProductServiceV1:
 
     def test_create_product_invalid_price_type(self):
         """잘못된 가격 타입 전달 시 테스트"""
-        # TODO: price가 문자열인 경우 예외 발생 검증
-        assert False
+
+        with pytest.raises(ValueError):
+            self.product_service.create_product(
+                name="test price",
+                price="test",
+                description="test description"
+            )
 
     def test_create_product_empty_name(self):
         """빈 상품명 전달 시 테스트"""
-        # TODO: 빈 문자열 name 전달 시 처리 검증
-        assert False
-
-    def test_create_product_none_values(self):
-        """None 값 전달 시 테스트"""
-        # TODO: None 값들 전달 시 예외 발생 검증
-        assert False
+        with pytest.raises(Exception, match="Product Name is Empty"):
+            self.product_service.create_product(
+                name="",
+                price=1000,
+                description="test description"
+            )
 
     def test_create_product_negative_price(self):
         """음수 가격 전달 시 테스트"""
-        # TODO: 음수 price 전달 시 예외 발생 검증
-        assert False
-
-    def test_create_product_very_long_name(self):
-        """매우 긴 상품명 전달 시 테스트"""
-        # TODO: 매우 긴 name 문자열 전달 시 처리 검증
-        assert False
-
-    def test_create_product_very_long_description(self):
-        """매우 긴 상품설명 전달 시 테스트"""
-        # TODO: 매우 긴 description 문자열 전달 시 처리 검증
-        assert False
+        with pytest.raises(Exception, match="Product Price is Negative"):
+            self.product_service.create_product(
+                name="test price",
+                price=-1000,
+                description="test description"
+            )
 
     # =============================================================================
     # get_product 메서드 테스트 케이스

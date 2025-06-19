@@ -7,9 +7,11 @@ from src.apps.services.interfaces import IProductService
 class ProductService(IProductService):
 
     @transaction.atomic()
-    def create_product(self, name: str, price: int, description: str):
+    def create_product(self, *, name: str, price: int, description: str):
         """ 상품 생성하기
 
+        TODO
+        - 25.06.19 : Argument Objects로 Refactoring
         """
 
         new_product = Product.init_entity(name=name, price=price, description=description)

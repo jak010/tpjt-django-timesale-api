@@ -1,10 +1,12 @@
 from abc import abstractmethod
 
+from src.apps.models.product import Product
+
 
 class IProductService:
 
     @abstractmethod
-    def create_product(self, name: str, price: int, description: str):
+    def create_product(self, name: str, price: int, description: str) -> Product:
         """ 상품 생성하기
 
         Args:
