@@ -12,3 +12,8 @@
 - [8. 변경 관리 프로세스 (Change Management Process)](./docs/8_change_management_process.md)
 - [9. 최종 승인자 (Document Approvals)](./docs/9_document_approvals.md)
 
+## Note
+
+- `25.06.19`
+    - SRS 형식에 맞춰 문서 작성
+    - Interface -> Test -> Implement 순서로 개발하기 
