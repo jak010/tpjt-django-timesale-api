@@ -15,6 +15,9 @@
 ## Note
 
 - `25.06.19`
-  - SRS 형식에 맞춰 문서 작성
-  - Interface -> Test -> Implement 순서로 개발하기
-  - "pytest-django" + "src layout" 조합의 테스트 적용 
+    - SRS 형식에 맞춰 문서 작성
+    - Interface -> Test -> Implement 순서로 개발하기
+    - "pytest-django" + "src layout" 조합의 테스트 적용
+- `25.06.20`
+    - src 외부의 "test" 이동
+      - pycharm에서 개발 시 "src" Source Include 적용하기
