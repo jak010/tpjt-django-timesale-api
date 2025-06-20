@@ -47,6 +47,33 @@ class TestTimeSaleService:
     def test_create_timesale_fail_due_to_invalid_time(self):
         """시작 시간이 종료 시간보다 늦은 경우 예외가 발생하는지를 테스트합니다."""
 
+        new_product = Product.init_entity(
+            name="Test Product",
+            price=10000,
+            description="Test Product Description"
+        )
+        new_product.save()
+
+        with pytest.raises(Exception):
+            self.sut.create_timesale(
+                product_id=new_product.product_id,
+                quantity=10,
+                discount_price=5000,
+                start_at=datetime.now() + timedelta(days=1),
+                end_at=datetime.now() - timedelta(days=1)
+            )
+
+    def test_create_timesale_with_not_exit_product(self):
+        """ 존재하지 않은 상품으로 타임세일 생성 시 예외가 발생하는지 테스트 """
+        with pytest.raises(Exception):
+            self.sut.create_timesale(
+                product_id=102391239239,
+                quantity=10,
+                discount_price=5000,
+                start_at=datetime.now() + timedelta(days=1),
+                end_at=datetime.now() - timedelta(days=1)
+            )
+
     # -------------------------------
     # get_timesale()
     # -------------------------------

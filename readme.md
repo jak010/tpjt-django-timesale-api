@@ -20,4 +20,12 @@
     - "pytest-django" + "src layout" 조합의 테스트 적용
 - `25.06.20`
     - src 외부의 "test" 이동
-      - pycharm에서 개발 시 "src" Source Include 적용하기
+        - pycharm에서 개발 시 "src" Source Include 적용하기
+- `25.06.21`
+    - DocString Tags
+        - Implementation : 구현된 세부사항
+        - Args : Argument 설명 (필요한 경우 작성됨)
+        - Note : 코드 작성 시 생각했던 부분 및 참고해야되는 정보
+        - ToDo : 추후 할일 작성
+    - Python에서 TDD를 위한 Setup
+        - Pycrunch + Pytest + Pytest-django

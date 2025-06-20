@@ -2,8 +2,13 @@ from django.db import models
 
 from .timesale import TimeSale
 
+from .abstract import TimestampedModel
 
-class TimeSaleOrder(models.Model):
+
+class TimeSaleOrder(TimestampedModel):
+    class Meta:
+        db_table = 'time_sale_orders'
+
     class OrderStatus(models.TextChoices):
         PENDING = 'PENDING', 'Pending'
         COMPLETED = 'COMPLETED', 'Completed'
@@ -20,11 +25,21 @@ class TimeSaleOrder(models.Model):
         default=OrderStatus.PENDING,
         null=False,
     )
-    created_at = models.DateTimeField(auto_now_add=True, null=False)
-    updated_at = models.DateTimeField(auto_now=True, null=False)
 
-    class Meta:
-        db_table = 'time_sale_orders'
+    @classmethod
+    def init_entity(cls,
+                    user_id: int,
+                    timesale: TimeSale,
+                    quantity: int,
+                    discount_price: int
+                    ):
+        return cls(
+            user_id=user_id,
+            time_sale=timesale,
+            quantity=quantity,
+            discount_price=discount_price,
+            status=cls.OrderStatus.PENDING
+        )
 
     def complete(self):
         self.status = TimeSaleOrder.OrderStatus.COMPLETED
