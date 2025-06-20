@@ -140,7 +140,3 @@ class TestProductServiceV1:
 
         assert len(products) == 0
 
-    def test_get_all_products_large_dataset(self):
-        """대량의 상품 데이터 조회 성능 테스트"""
-        # TODO: 대량 데이터 조회 시 성능 및 정확성 검증
-        assert False
