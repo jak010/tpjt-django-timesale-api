@@ -1,12 +1,20 @@
 from abc import abstractmethod
+from datetime import datetime
 
 from src.apps.dto.timsale_dto import TimeSaleCreateRequestDto
 
 
-class TimeSaleService:
+class ITimeSaleService:
 
     @abstractmethod
-    def create_timesale(self):
+    def create_timesale(self,
+                        *,
+                        product_id: int,
+                        quantity: int,
+                        discount_price: int,
+                        start_at: datetime,
+                        end_at: datetime
+                        ):
         """ 시간할인 생성하기 """
         raise NotImplementedError("Method not implemented")
 

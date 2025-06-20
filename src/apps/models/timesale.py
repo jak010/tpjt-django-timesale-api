@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.utils import timezone
 
@@ -9,6 +11,7 @@ class TimeSale(TimestampedModel):
     class Meta:
         db_table = 'time_sales'
         ordering = ["-created_at"]
+        app_label = "apps"
 
     class Status(models.TextChoices):
         ACTIVE = 'ACTIVE', 'Active'
@@ -30,6 +33,24 @@ class TimeSale(TimestampedModel):
     version = models.BigIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True, null=False)
+
+    @classmethod
+    def init_entity(cls, *,
+                    product: Product,
+                    quantity: int,
+                    discount_price: int,
+                    start_at: datetime.datetime,
+                    end_at: datetime.datetime
+                    ):
+
+        return cls(
+            product=product,
+            quantity=quantity,
+            remaining_quantity=quantity,
+            discount_price=discount_price,
+            start_at=start_at,
+            end_at=end_at
+        )
 
     def is_active(self):
         return self.status == TimeSale.Status.ACTIVE
