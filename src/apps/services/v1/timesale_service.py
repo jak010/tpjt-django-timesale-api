@@ -1,8 +1,7 @@
 import datetime
 
+from apps.models import Product, TimeSale
 from src.apps.dto.timsale_dto import TimeSaleCreateRequestDto
-from src.apps.models.product import Product
-from src.apps.models.timesale import TimeSale
 from src.apps.services.interfaces.i_timesale_service import ITimeSaleService
 
 

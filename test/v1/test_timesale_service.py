@@ -3,10 +3,9 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from src.apps.models.product import Product
-from src.apps.models.timesale import TimeSale
-from src.apps.services.interfaces.i_timesale_service import ITimeSaleService
-from src.apps.services.v1.timesale_service import TimeSaleService
+from apps.models import Product, TimeSale
+from apps.services.interfaces.i_timesale_service import ITimeSaleService
+from apps.services.v1.timesale_service import TimeSaleService
 
 
 @pytest.mark.django_db

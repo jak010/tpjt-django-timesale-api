@@ -3,7 +3,8 @@ from typing import Optional, List
 from django.db import transaction
 
 from apps.models.product import Product
-from apps.services.interfaces import IProductService
+
+from src.apps.services.interfaces import IProductService
 
 
 class ProductService(IProductService):

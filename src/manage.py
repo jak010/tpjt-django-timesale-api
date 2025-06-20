@@ -3,11 +3,17 @@
 import os
 import sys
 
-# sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
 
 def main():
     """Run administrative tasks."""
+
+    # BASE_DIR = os.path.join(os.path.dirname(__file__), '..')
+    # ROOT_DIR = os.path.join(BASE_DIR, '..')
+    #
+    # # sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+    sys.path.append(PROJECT_ROOT)
 
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.local')
     try:

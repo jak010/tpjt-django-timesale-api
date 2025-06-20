@@ -1,9 +1,12 @@
 import pytest
 from django.test import override_settings  # noqa
 
+# from src.apps.models import Product
+
 from apps.models import Product
-from src.apps.services.interfaces.i_product_service import IProductService
-from src.apps.services.v1.product_service import ProductService
+
+from apps.services.interfaces.i_product_service import IProductService
+from apps.services.v1.product_service import ProductService
 
 
 @pytest.mark.django_db
