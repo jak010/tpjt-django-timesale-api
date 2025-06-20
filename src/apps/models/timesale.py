@@ -3,7 +3,7 @@ import datetime
 from django.db import models
 from django.utils import timezone
 
-from src.contrib.timestamp_models import TimestampedModel
+from .abstract import TimestampedModel
 from .product import Product
 
 
@@ -11,7 +11,6 @@ class TimeSale(TimestampedModel):
     class Meta:
         db_table = 'time_sales'
         ordering = ["-created_at"]
-        app_label = "apps"
 
     class Status(models.TextChoices):
         ACTIVE = 'ACTIVE', 'Active'

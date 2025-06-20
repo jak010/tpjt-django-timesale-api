@@ -1,13 +1,13 @@
 from django.db import models
 
-from src.contrib.timestamp_models import TimestampedModel
+from .abstract import TimestampedModel
 
 
 class Product(TimestampedModel):
     class Meta:
         db_table = 'products'
         ordering = ['created_at']
-        app_label = "apps"
+
 
     product_id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255, null=False)

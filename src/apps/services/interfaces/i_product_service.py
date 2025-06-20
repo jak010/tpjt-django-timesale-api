@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from src.apps.models.product import Product
+from apps.models.product import Product
 
 
 class IProductService:

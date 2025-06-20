@@ -1,7 +1,7 @@
 import pytest
 from django.test import override_settings  # noqa
 
-from src.apps.models.product import Product
+from apps.models import Product
 from src.apps.services.interfaces.i_product_service import IProductService
 from src.apps.services.v1.product_service import ProductService
 
@@ -139,4 +139,3 @@ class TestProductServiceV1:
         products = self.product_service.get_all_products()
 
         assert len(products) == 0
-
