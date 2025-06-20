@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import datetime
+from typing import Optional
 
 from django.db import models
 from django.utils import timezone
@@ -39,7 +42,8 @@ class TimeSale(TimestampedModel):
                     quantity: int,
                     discount_price: int,
                     start_at: datetime.datetime,
-                    end_at: datetime.datetime
+                    end_at: datetime.datetime,
+                    status: Optional[TimeSale.Status] = None
                     ):
 
         return cls(
@@ -48,7 +52,8 @@ class TimeSale(TimestampedModel):
             remaining_quantity=quantity,
             discount_price=discount_price,
             start_at=start_at,
-            end_at=end_at
+            end_at=end_at,
+            status=status
         )
 
     def is_active(self):

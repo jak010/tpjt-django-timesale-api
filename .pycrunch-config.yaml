@@ -4,6 +4,7 @@ discovery:
 engine:
   runtime: pytest
   load-pytest-plugins: true
+  cpu-cores: 4
 env:
   PYTHONPATH: src
   DJANGO_SETTINGS_MODULE: config.settings.local

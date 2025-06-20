@@ -6,9 +6,10 @@ import pytest
 from apps.models import Product, TimeSale
 from apps.services.interfaces.i_timesale_service import ITimeSaleService
 from apps.services.v1.timesale_service import TimeSaleService
+from django.test import override_settings
 
 
-# @pytest.mark.django_db
+@pytest.mark.django_db
 class TestTimeSaleService:
 
     @pytest.fixture(autouse=True)
@@ -108,11 +109,57 @@ class TestTimeSaleService:
     # get_ongoing_timesales()
     # -------------------------------
 
+    @override_settings(DEBUG=True)
     def test_get_ongoing_timesales_success(self):
         """현재 진행 중인 타임세일이 정상적으로 필터링되고 페이지네이션되어 반환되는지를 테스트합니다."""
 
+        new_product = Product.init_entity(
+            name="Test Product",
+            price=10000,
+            description="Test Product Description"
+        )
+        new_product.save()
+
+        new_timesale = TimeSale.init_entity(
+            product=new_product,
+            quantity=10,
+            discount_price=5000,
+            start_at=datetime.now(),
+            end_at=datetime.now() + timedelta(days=1),
+            status=TimeSale.Status.ACTIVE
+        )
+        new_timesale.save()
+
+        ongoing_timesales = self.sut.get_ongoing_timesales(0, 10)
+
+        assert len(ongoing_timesales) >= 1
+
+        for ongoing_timesale in ongoing_timesales:
+            assert isinstance(ongoing_timesale, TimeSale)
+
     def test_get_ongoing_timesales_empty(self):
         """조건에 해당하는 타임세일이 없을 때 빈 리스트를 반환하는지를 테스트합니다."""
+
+        new_product = Product.init_entity(
+            name="Test Product",
+            price=10000,
+            description="Test Product Description"
+        )
+        new_product.save()
+
+        new_timesale = TimeSale.init_entity(
+            product=new_product,
+            quantity=10,
+            discount_price=5000,
+            start_at=datetime.now(),
+            end_at=datetime.now() + timedelta(days=1),
+            status=TimeSale.Status.ACTIVE
+        )
+        new_timesale.save()
+
+        ongoing_timesales = self.sut.get_ongoing_timesales(1, 10)
+
+        assert len(ongoing_timesales) == 0
 
     # -------------------------------
     # purchase_time_sale()

@@ -1,5 +1,7 @@
 import datetime
 
+from rest_framework.pagination import LimitOffsetPagination
+
 from apps.models import Product, TimeSale, TimeSaleOrder
 from src.apps.dto.timsale_dto import TimeSaleCreateRequestDto
 from src.apps.services.interfaces.i_timesale_service import ITimeSaleService
@@ -45,7 +47,8 @@ class TimeSaleService(ITimeSaleService):
             quantity=quantity,
             discount_price=discount_price,
             start_at=start_at,
-            end_at=end_at
+            end_at=end_at,
+            status=TimeSale.Status.ACTIVE
         )
         timesale.save()
 
@@ -69,9 +72,20 @@ class TimeSaleService(ITimeSaleService):
 
         """
 
-        ongoging_timesale = TimeSale.objects.filter(status=TimeSale.ACTIVE.value)
+        class RequestParam:
+            def __init__(self, limit: int, offset: int):
+                self.query_params = {
+                    "limit": limit,
+                    "offset": offset
+                }
 
-        return ongoging_timesale.all()
+        limit_pagination = LimitOffsetPagination()
+
+        return limit_pagination.paginate_queryset(
+            TimeSale.objects.filter(status=TimeSale.Status.ACTIVE).all(),
+            RequestParam(limit=size, offset=page),
+            None
+        )
 
     @transaction.atomic()
     def purchase_time_sale(self, timesale_id: int, command: TimeSaleCreateRequestDto):
