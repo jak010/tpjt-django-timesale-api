@@ -22,6 +22,8 @@ class ProductService(IProductService):
         return new_product
 
     def get_product(self, product_id: int) -> Optional[Product]:
+        """ 상품 조회 """
+
         product = Product.objects.filter(product_id=product_id)
         if product.exists():
             return product.first()
@@ -29,4 +31,5 @@ class ProductService(IProductService):
         raise Exception("Product Not Found")
 
     def get_all_products(self) -> List[Product]:
+        """ 상품 목록조회 """
         return Product.objects.all()
