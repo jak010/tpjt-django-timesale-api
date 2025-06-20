@@ -1,3 +1,5 @@
+from typing import Optional, List
+
 from django.db import transaction
 
 from src.apps.models.product import Product
@@ -18,8 +20,12 @@ class ProductService(IProductService):
         new_product.save()
         return new_product
 
-    def get_product(self, product_id: int):
-        pass
+    def get_product(self, product_id: int) -> Optional[Product]:
+        product = Product.objects.filter(product_id=product_id)
+        if product.exists():
+            return product.first()
 
-    def get_all_products(self):
-        pass
+        raise Exception("Product Not Found")
+
+    def get_all_products(self) -> List[Product]:
+        return Product.objects.all()
