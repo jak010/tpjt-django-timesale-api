@@ -4,10 +4,7 @@ discovery:
 engine:
   runtime: pytest
   load-pytest-plugins: true
-
 env:
-#   everything here will be passed as environment variables to the test runner
   PYTHONPATH: src
   DJANGO_SETTINGS_MODULE: config.settings.local
-
-#  DJANGO_ALLOW_ASYNC_UNSAFE: "true"
+  DJANGO_ALLOW_ASYNC_UNSAFE: "true"

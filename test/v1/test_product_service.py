@@ -7,9 +7,8 @@ from apps.models import Product
 from apps.services.interfaces.i_product_service import IProductService
 from apps.services.v1.product_service import ProductService
 
-pytestmark = pytest.mark.django_db
 
-
+@pytest.mark.django_db
 class TestProductServiceV1:
     """IProductService 인터페이스 테스트 케이스"""
 

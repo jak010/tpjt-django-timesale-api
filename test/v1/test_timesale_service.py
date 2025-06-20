@@ -8,7 +8,7 @@ from apps.services.interfaces.i_timesale_service import ITimeSaleService
 from apps.services.v1.timesale_service import TimeSaleService
 
 
-@pytest.mark.django_db
+# @pytest.mark.django_db
 class TestTimeSaleService:
 
     @pytest.fixture(autouse=True)
@@ -81,8 +81,28 @@ class TestTimeSaleService:
     def test_get_timesale_success(self):
         """유효한 타임세일 ID에 대해 상세 정보를 정상적으로 조회할 수 있는지 테스트합니다."""
 
+        new_product = Product.init_entity(
+            name="Test Product",
+            price=10000,
+            description="Test Product Description"
+        )
+        new_product.save()
+
+        new_timesale = self.sut.create_timesale(
+            product_id=new_product.product_id,
+            quantity=10,
+            discount_price=5000,
+            start_at=datetime.now(),
+            end_at=datetime.now() + timedelta(days=1)
+        )
+
+        assert new_timesale == self.sut.get_timesale(new_timesale.timesale_id)
+
     def test_get_timesale_not_found(self):
         """존재하지 않는 타임세일 ID로 조회 시 예외가 발생하는지를 테스트합니다."""
+
+        with pytest.raises(Exception):
+            self.sut.get_timesale(9999999)
 
     # -------------------------------
     # get_ongoing_timesales()
