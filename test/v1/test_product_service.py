@@ -4,7 +4,6 @@ from django.test import override_settings  # noqa
 # from src.apps.models import Product
 
 from apps.models import Product
-
 from apps.services.interfaces.i_product_service import IProductService
 from apps.services.v1.product_service import ProductService
 
@@ -20,7 +19,7 @@ class TestProductServiceV1:
     # create_product 메서드 테스트 케이스
     # =============================================================================
 
-    # @override_settings(DEBUG=True)
+    @override_settings(DEBUG=True)
     def test_create_product_success(self):
         """상품 생성 테스트 - 성공"""
 
