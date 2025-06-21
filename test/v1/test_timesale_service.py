@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from apps.dto.timsale_dto import TimeSaleCreateRequestDto
+from apps.dto.timsale_dto import TimeSaleCreateRequestDto, TimeSalePurchaseRequestDto
 from apps.models import Product, TimeSale, TimeSaleOrder
 from apps.services.interfaces.i_timesale_service import ITimeSaleService
 from apps.services.v1.timesale_service import TimeSaleService
@@ -211,3 +211,68 @@ class TestTimeSaleService:
 
     def test_purchase_timesale_out_of_stock(self):
         """재고가 부족한 상황에서 예외가 발생하는지를 테스트합니다."""
+
+        # Arrange
+        new_product = Product.init_entity(
+            name="Test Product",
+            price=10000,
+            description="Test Product Description"
+        )
+        new_product.save()
+
+        new_timesale = TimeSale.init_entity(
+            product=new_product,
+            quantity=10,
+            discount_price=5000,
+            start_at=datetime.now(),
+            end_at=datetime.now() + timedelta(days=1),
+            status=TimeSale.Status.ACTIVE
+        )
+        new_timesale.save()
+
+        command = TimeSaleCreateRequestDto(
+            data={
+                "user_id": 1,
+                "product_id": new_product.product_id,
+                "quantity": 100,
+                "discount_price": 1000,
+                "start_at": datetime.now(),
+                "end_at": datetime.now() + timedelta(days=1)
+            }
+        )
+
+        # Act
+        with pytest.raises(ValueError, match="Not enough quantity available"):
+            self.sut.purchase_time_sale(new_timesale.timesale_id, command)
+
+    def test_purchase_timesale_not_in_progress(self):
+        """ 타임세일 기간이 아닌 경우 구매 실패하기 """
+
+        # Arrange
+        new_product = Product.init_entity(
+            name="Test Product",
+            price=10000,
+            description="Test Product Description"
+        )
+        new_product.save()
+
+        new_timesale = TimeSale.init_entity(
+            product=new_product,
+            quantity=10,
+            discount_price=5000,
+            start_at=datetime.now() + + timedelta(days=1),
+            end_at=datetime.now() + timedelta(days=2),
+            status=TimeSale.Status.ACTIVE
+        )
+        new_timesale.save()
+
+        command = TimeSalePurchaseRequestDto(
+            data={
+                "user_id": 1,
+                "quantity": 10
+            }
+        )
+
+        # Act
+        with pytest.raises(ValueError, match="Time sale is not in valid period"):
+            self.sut.purchase_time_sale(new_timesale.timesale_id, command)

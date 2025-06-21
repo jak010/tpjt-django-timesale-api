@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from datetime import datetime
 
-from src.apps.dto.timsale_dto import TimeSaleCreateRequestDto
+from src.apps.dto.timsale_dto import TimeSaleCreateRequestDto, TimeSalePurchaseRequestDto
 
 
 class ITimeSaleService:
@@ -41,7 +41,7 @@ class ITimeSaleService:
     @abstractmethod
     def purchase_time_sale(self,
                            timesale_id: int,
-                           command: TimeSaleCreateRequestDto
+                           command: TimeSalePurchaseRequestDto
                            ):
         """ 타임세일 구매 처리
         타임세일 ID로 해당 상품 조회 비관적 락을 사용하여 조회
