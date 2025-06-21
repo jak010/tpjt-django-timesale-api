@@ -1,18 +1,17 @@
 from abc import abstractmethod
 
 from apps.models.product import Product
+from apps.views.request import CreateProductRequestDto
 
 
 class IProductService:
 
     @abstractmethod
-    def create_product(self, name: str, price: int, description: str) -> Product:
+    def create_product(self, command: CreateProductRequestDto) -> Product:
         """ 상품 생성하기
 
         Args:
-            name (str): 상품명
-            price (int): 상품가격
-            description (str): 상품설명
+            command (CreateProductRequestDto):
 
         """
         raise NotImplementedError("Method not implemented")

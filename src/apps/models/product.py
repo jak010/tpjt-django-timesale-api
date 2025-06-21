@@ -8,7 +8,6 @@ class Product(TimestampedModel):
         db_table = 'products'
         ordering = ['created_at']
 
-
     product_id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255, null=False)
     price = models.BigIntegerField(null=False)
@@ -26,7 +25,7 @@ class Product(TimestampedModel):
         if price < 0:
             raise Exception("Product Price is Negative")
 
-        if not name or name is None:
+        if name is None or not name:
             raise Exception("Product Name is Empty")
 
         if description is None:
