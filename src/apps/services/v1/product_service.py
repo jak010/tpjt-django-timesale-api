@@ -5,7 +5,7 @@ from typing import Optional, List, TYPE_CHECKING
 from django.db import transaction
 
 from apps.models.product import Product
-from src.apps.services.interfaces import IProductService
+from apps.services.interfaces import IProductService
 
 if TYPE_CHECKING:
     from apps.views.v1.product_view import CreateProductRequestDto
