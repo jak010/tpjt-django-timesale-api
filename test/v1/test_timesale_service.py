@@ -3,7 +3,8 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from apps.models import Product, TimeSale
+from apps.dto.timsale_dto import TimeSaleCreateRequestDto
+from apps.models import Product, TimeSale, TimeSaleOrder
 from apps.services.interfaces.i_timesale_service import ITimeSaleService
 from apps.services.v1.timesale_service import TimeSaleService
 from django.test import override_settings
@@ -167,6 +168,46 @@ class TestTimeSaleService:
 
     def test_purchase_timesale_success(self):
         """타임세일 구매 요청이 정상적으로 처리되고 주문 및 재고 차감이 이루어지는지를 테스트합니다."""
+
+        # Arrange
+        new_product = Product.init_entity(
+            name="Test Product",
+            price=10000,
+            description="Test Product Description"
+        )
+        new_product.save()
+
+        new_timesale = TimeSale.init_entity(
+            product=new_product,
+            quantity=100,
+            discount_price=5000,
+            start_at=datetime.now(),
+            end_at=datetime.now() + timedelta(days=1),
+            status=TimeSale.Status.ACTIVE
+        )
+        new_timesale.save()
+
+        command = TimeSaleCreateRequestDto(
+            data={
+                "user_id": 1,
+                "product_id": new_product.product_id,
+                "quantity": 10,
+                "discount_price": 1000,
+                "start_at": datetime.now(),
+                "end_at": datetime.now() + timedelta(days=1)
+            }
+        )
+
+        # Act
+        timesale = self.sut.purchase_time_sale(new_timesale.timesale_id, command)
+
+        # Assert
+        assert isinstance(timesale, TimeSale)
+        assert timesale.timesale_id == new_timesale.timesale_id
+
+        timesale_order = TimeSaleOrder.objects.filter(time_sale=timesale).first()
+        assert isinstance(timesale_order, TimeSaleOrder)
+        assert timesale_order.time_sale.timesale_id == new_timesale.timesale_id
 
     def test_purchase_timesale_out_of_stock(self):
         """재고가 부족한 상황에서 예외가 발생하는지를 테스트합니다."""

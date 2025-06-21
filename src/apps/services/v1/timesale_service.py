@@ -3,7 +3,7 @@ import datetime
 from rest_framework.pagination import LimitOffsetPagination
 
 from apps.models import Product, TimeSale, TimeSaleOrder
-from src.apps.dto.timsale_dto import TimeSaleCreateRequestDto
+from src.apps.dto.timsale_dto import TimeSaleCreateRequestDto, TimeSalePurchaseRequestDto
 from src.apps.services.interfaces.i_timesale_service import ITimeSaleService
 
 from django.db import transaction
@@ -88,22 +88,23 @@ class TimeSaleService(ITimeSaleService):
         )
 
     @transaction.atomic()
-    def purchase_time_sale(self, timesale_id: int, command: TimeSaleCreateRequestDto):
+    def purchase_time_sale(self, timesale_id: int, command: TimeSalePurchaseRequestDto):
         """ 타임 세일 상품 구매하기
 
         """
+        command.is_valid(raise_exception=True)
 
         timesale = TimeSale.objects.select_for_update().filter(timesale_id=timesale_id).first()
         if timesale is None:
             raise Exception("TimeSale Not Found")
 
-        timesale.purchase(command.quantity)
+        timesale.purchase(command.validated_data["quantity"])
         timesale.save()
 
         timesale_order = TimeSaleOrder.init_entity(
+            user_id=command.validated_data['user_id'],
+            quantity=command.validated_data["quantity"],
             timesale=timesale,
-            user_id=command.user_id,
-            quantity=command.quantity,
             discount_price=timesale.discount_price
         )
         timesale_order.save()
