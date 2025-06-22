@@ -12,42 +12,38 @@ from django.db import transaction
 class TimeSaleService(ITimeSaleService):
 
     @transaction.atomic()
-    def create_timesale(self,
-                        product_id: int,
-                        quantity: int,
-                        discount_price: int,
-                        start_at: datetime.datetime,
-                        end_at: datetime.datetime
-                        ):
+    def create_timesale(self, command: TimeSaleCreateRequestDto) -> TimeSale:
         """ timesale 생성하기
 
-
         Implementation
-            상품 ID에 기반하여 주어진 수량, 할인 가격, 시작/종료 시간으로 유효한 타임세일(TimeSale) 엔티티를 생성하고 저장한 뒤, 이를 반환
+            `command` 객체에 포함된 상품 ID, 수량, 할인 가격, 시작/종료 시간을 사용하여 유효한 타임세일(TimeSale) 엔티티를 생성하고 저장한 뒤, 이를 반환
 
         Ref
             - 테스트 참조 : test_timesale_service.py
 
-        TODO
-            - 25.06.21 : Argument를 Object로 Refactoring 하기
+        Side Effects
+            - 새로운 `TimeSale` 엔티티가 데이터베이스에 생성 및 저장됩니다.
+            - 유효하지 않은 입력(예: 존재하지 않는 상품 ID, 유효하지 않은 시간 범위, 0 이하의 수량/할인 가격)의 경우 예외가 발생하여 타임세일 생성이 실패할 수 있습니다.
         """
+        command.is_valid(raise_exception=True)
 
-        product = Product.objects.filter(product_id=product_id).first()
+        product = Product.objects.filter(product_id=command.validated_data["product_id"]).first()
         if product is None:
             raise Exception("Product Not Found")
 
         self._validate_time_sale(
-            quantity,
-            discount_price,
-            start_at, end_at
+            command.validated_data["quantity"],
+            command.validated_data["discount_price"],
+            command.validated_data["start_at"],
+            command.validated_data["end_at"]
         )
 
         timesale = TimeSale.init_entity(
             product=product,
-            quantity=quantity,
-            discount_price=discount_price,
-            start_at=start_at,
-            end_at=end_at,
+            quantity=command.validated_data["quantity"],
+            discount_price=command.validated_data["discount_price"],
+            start_at=command.validated_data["start_at"],
+            end_at=command.validated_data["end_at"],
             status=TimeSale.Status.ACTIVE
         )
         timesale.save()

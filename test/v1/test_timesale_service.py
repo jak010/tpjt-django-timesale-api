@@ -31,14 +31,17 @@ class TestTimeSaleService:
         )
         new_product.save()
 
-        new_timesale = self.sut.create_timesale(
-            product_id=new_product.product_id,
-            quantity=10,
-            discount_price=5000,
-            start_at=datetime.now(),
-            end_at=datetime.now() + timedelta(days=1)
-
+        command = TimeSaleCreateRequestDto(
+            data={
+                "user_id": 1,
+                "product_id": new_product.product_id,
+                "quantity": 10,
+                "discount_price": 5000,
+                "start_at": datetime.now(),
+                "end_at": datetime.now() + timedelta(days=1)
+            }
         )
+        new_timesale = self.sut.create_timesale(command)
 
         assert isinstance(new_timesale, TimeSale)
         assert new_timesale.product.product_id == new_product.product_id
@@ -56,25 +59,77 @@ class TestTimeSaleService:
         )
         new_product.save()
 
-        with pytest.raises(Exception):
-            self.sut.create_timesale(
-                product_id=new_product.product_id,
-                quantity=10,
-                discount_price=5000,
-                start_at=datetime.now() + timedelta(days=1),
-                end_at=datetime.now() - timedelta(days=1)
+        with pytest.raises(Exception, match="End At must be greater than Start At"):
+            command = TimeSaleCreateRequestDto(
+                data={
+                    "user_id": 1,
+                    "product_id": new_product.product_id,
+                    "quantity": 10,
+                    "discount_price": 5000,
+                    "start_at": datetime.now() + timedelta(days=1),
+                    "end_at": datetime.now() - timedelta(days=1)
+                }
             )
+            self.sut.create_timesale(command)
 
     def test_create_timesale_with_not_exit_product(self):
         """ 존재하지 않은 상품으로 타임세일 생성 시 예외가 발생하는지 테스트 """
-        with pytest.raises(Exception):
-            self.sut.create_timesale(
-                product_id=102391239239,
-                quantity=10,
-                discount_price=5000,
-                start_at=datetime.now() + timedelta(days=1),
-                end_at=datetime.now() - timedelta(days=1)
+        with pytest.raises(Exception, match="Product Not Found"):
+            command = TimeSaleCreateRequestDto(
+                data={
+                    "user_id": 1,
+                    "product_id": 102391239239,
+                    "quantity": 10,
+                    "discount_price": 5000,
+                    "start_at": datetime.now(),
+                    "end_at": datetime.now() + timedelta(days=1)
+                }
             )
+            self.sut.create_timesale(command)
+
+    def test_create_timesale_fail_due_to_invalid_quantity(self):
+        """수량이 0 이하일 때 예외가 발생하는지를 테스트합니다."""
+        new_product = Product.init_entity(
+            name="Test Product",
+            price=10000,
+            description="Test Product Description"
+        )
+        new_product.save()
+
+        with pytest.raises(Exception, match="Quantity must be greater than 0"):
+            command = TimeSaleCreateRequestDto(
+                data={
+                    "user_id": 1,
+                    "product_id": new_product.product_id,
+                    "quantity": 0,
+                    "discount_price": 5000,
+                    "start_at": datetime.now(),
+                    "end_at": datetime.now() + timedelta(days=1)
+                }
+            )
+            self.sut.create_timesale(command)
+
+    def test_create_timesale_fail_due_to_invalid_discount_price(self):
+        """할인 가격이 0 이하일 때 예외가 발생하는지를 테스트합니다."""
+        new_product = Product.init_entity(
+            name="Test Product",
+            price=10000,
+            description="Test Product Description"
+        )
+        new_product.save()
+
+        with pytest.raises(Exception, match="Discount Price must be greater than 0"):
+            command = TimeSaleCreateRequestDto(
+                data={
+                    "user_id": 1,
+                    "product_id": new_product.product_id,
+                    "quantity": 10,
+                    "discount_price": 0,
+                    "start_at": datetime.now(),
+                    "end_at": datetime.now() + timedelta(days=1)
+                }
+            )
+            self.sut.create_timesale(command)
 
     # -------------------------------
     # get_timesale()
@@ -90,13 +145,17 @@ class TestTimeSaleService:
         )
         new_product.save()
 
-        new_timesale = self.sut.create_timesale(
-            product_id=new_product.product_id,
-            quantity=10,
-            discount_price=5000,
-            start_at=datetime.now(),
-            end_at=datetime.now() + timedelta(days=1)
+        command = TimeSaleCreateRequestDto(
+            data={
+                "user_id": 1,
+                "product_id": new_product.product_id,
+                "quantity": 10,
+                "discount_price": 5000,
+                "start_at": datetime.now(),
+                "end_at": datetime.now() + timedelta(days=1)
+            }
         )
+        new_timesale = self.sut.create_timesale(command)
 
         assert new_timesale == self.sut.get_timesale(new_timesale.timesale_id)
 
@@ -187,14 +246,10 @@ class TestTimeSaleService:
         )
         new_timesale.save()
 
-        command = TimeSaleCreateRequestDto(
+        command = TimeSalePurchaseRequestDto(
             data={
                 "user_id": 1,
-                "product_id": new_product.product_id,
-                "quantity": 10,
-                "discount_price": 1000,
-                "start_at": datetime.now(),
-                "end_at": datetime.now() + timedelta(days=1)
+                "quantity": 10
             }
         )
 
@@ -230,14 +285,10 @@ class TestTimeSaleService:
         )
         new_timesale.save()
 
-        command = TimeSaleCreateRequestDto(
+        command = TimeSalePurchaseRequestDto(
             data={
                 "user_id": 1,
-                "product_id": new_product.product_id,
-                "quantity": 100,
-                "discount_price": 1000,
-                "start_at": datetime.now(),
-                "end_at": datetime.now() + timedelta(days=1)
+                "quantity": 100
             }
         )
 
