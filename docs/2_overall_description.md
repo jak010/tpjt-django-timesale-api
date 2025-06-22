@@ -83,6 +83,25 @@ C4Context
 
 ## 2.3 Overall Operation (전체 동작방식)
 
+```mermaid
+sequenceDiagram
+    actor User
+    participant TimesaleAPI as Django Timesale API
+    participant Redis as Redis Cache
+    participant MySQL as MySQL Database
+    participant Kafka as Kafka Message Queue
+    User ->> TimesaleAPI: 타임세일 상품 구매 요청 (user_id, timesale_id, quantity)
+    TimesaleAPI ->> Redis: 재고 확인 (timesale_id)
+    Redis -->> TimesaleAPI: 재고 정보 반환
+    TimesaleAPI ->> MySQL: 비관적 락 획득 및 재고 차감 (timesale_id, quantity)
+    MySQL -->> TimesaleAPI: 락 획득 및 차감 결과 반환
+    TimesaleAPI ->> MySQL: TimeSaleOrder 생성 (user_id, timesale_id, quantity, discount_price, status=PENDING)
+    MySQL -->> TimesaleAPI: 주문 생성 결과 반환
+    TimesaleAPI ->> Redis: 캐시 재고 업데이트 (timesale_id, remaining_quantity)
+    TimesaleAPI ->> Kafka: 주문 처리 이벤트 발행 (timesale_order_id)
+    TimesaleAPI -->> User: 구매 성공 응답
+```
+
 ## 2.4 Product Functions (제품 주요 기능)
 
 | 분류          | 기능명           | API 함수명                 | 주요 내용                                                                                                                  | 테스트 케이스 목록                                                                                                                                                                                                                                                                                                                                                  |
