@@ -14,8 +14,13 @@
     - [2.3 Overall Operation (전체 동작방식)](#23-overall-operation-전체-동작방식)
     - [2.4 Product Functions (제품 주요 기능)](#24-product-functions-제품-주요-기능)
     - [2.5 User Classes and Characteristics (사용자 계층과 특징)](#25-user-classes-and-characteristics-사용자-계층과-특징)
+        - [일반 사용자 (General User)](#일반-사용자-general-user)
+        - [관리자 (Administrator)](#관리자-administrator)
     - [2.6 Assumptions and Dependencies (가정과 종속 관계)](#26-assumptions-and-dependencies-가정과-종속-관계)
     - [2.7 Apportioning of Requirements (단계별 요구사항)](#27-apportioning-of-requirements-단계별-요구사항)
+        - [1단계: 핵심 기능 구현 (MVP)](#1단계-핵심-기능-구현-mvp)
+        - [2단계: 성능 및 안정성 강화](#2단계-성능-및-안정성-강화)
+        - [3단계: 확장 및 고도화](#3단계-확장-및-고도화)
     - [2.8 Backward compatibility (하위 호환성)](#28-backward-compatibility-하위-호환성)
 
 ## 2.1 Product Perspective (제품 조망)
@@ -134,8 +139,59 @@ sequenceDiagram
 
 ## 2.5 User Classes and Characteristics (사용자 계층과 특징)
 
+본 시스템의 주요 사용자 계층은 다음과 같습니다.
+
+### 일반 사용자 (General User)
+
+- **특징**: 타임세일 상품을 조회하고 구매하는 일반적인 사용자입니다.
+- **주요 활동**:
+    - 현재 진행 중인 타임세일 상품 목록 조회
+    - 특정 타임세일 상품 상세 정보 조회
+    - 타임세일 상품 구매 요청
+
+### 관리자 (Administrator)
+
+- **특징**: 타임세일 상품 및 이벤트를 생성, 수정, 관리하는 내부 운영자입니다.
+- **주요 활동**:
+    - 새로운 상품 등록 및 기존 상품 정보 수정
+    - 타임세일 이벤트 생성 및 관리 (수량, 가격, 기간 설정)
+    - 타임세일 주문 현황 모니터링 (향후 확장 가능성)
+
 ## 2.6 Assumptions and Dependencies (가정과 종속 관계)
+
+- `N/A`
 
 ## 2.7 Apportioning of Requirements (단계별 요구사항)
 
+본 시스템의 요구사항은 다음과 같은 단계로 나누어 구현될 수 있습니다.
+
+### 1단계: 핵심 기능 구현 (MVP)
+
+- **목표**: 타임세일 API의 핵심 기능을 구현하여 기본적인 서비스 제공.
+- **주요 요구사항**:
+    - 상품 생성, 조회, 목록 조회 기능
+    - 타임세일 생성, 조회, 진행 중인 타임세일 목록 조회 기능
+    - 타임세일 상품 구매 기능 (기본적인 재고 관리 포함)
+    - 데이터베이스 연동 (MySQL)
+
+### 2단계: 성능 및 안정성 강화
+
+- **목표**: 대규모 트래픽 및 동시성 문제를 처리하고 시스템 안정성 확보.
+- **주요 요구사항**:
+    - Redis를 활용한 재고 캐싱 및 조회 성능 최적화
+    - Kafka 메시지 큐를 통한 비동기 주문 처리 도입
+    - 비관적 락(Pessimistic Lock)을 통한 동시성 제어 강화
+    - 트랜잭션 기반의 안전한 구매 처리 로직 구현
+
+### 3단계: 확장 및 고도화
+
+- **목표**: 관리자 기능 및 외부 시스템 연동을 통해 서비스 확장성 및 편의성 증대.
+- **주요 요구사항**:
+    - 관리자를 위한 타임세일 이벤트 생성/수정/삭제 UI (별도 관리자 시스템)
+    - 타임세일 알림 시스템 (예: 시작 전 알림, 재고 부족 알림)
+    - 외부 결제 시스템 연동
+    - 모니터링 및 로깅 시스템 강화
+
 ## 2.8 Backward compatibility (하위 호환성)
+
+- `N/A`
