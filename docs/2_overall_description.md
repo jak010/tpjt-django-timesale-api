@@ -55,6 +55,32 @@
 
 ## 2.2 Overall System Configuration (전체 시스템 구성)
 
+### 2.2.1 System Context
+
+```mermaid
+C4Context
+    title Django Timesale API System - Context Diagram (Top-Down)
+    Person(user, "사용자", "타임세일 상품을 조회하고 구매하는 사용자")
+
+    Enterprise_Boundary(e1, "Timesale API") {
+        System(timesale_api, "Django Timesale API", "타임세일 상품의 조회, 주문, 결제 등을 처리하는 메인 백엔드 시스템")
+    }
+
+    Enterprise_Boundary(e2, "Storage") {
+        System(database, "MySQL Database", "데이터 저장소", "상품, 주문, 재고 등의 정보를 저장합니다.")
+        System(cache_service, "Redis Cache", "인메모리 캐시", "상품 재고 및 주문 상태를 캐싱하여 성능을 향상시킵니다.")
+        System(message_queue, "Kafka Message Queue", "메시지 브로커", "비동기 주문 처리 및 이벤트 발행을 수행합니다.")
+    }
+
+%% 관계 정의 (위 -> 아래 방향)
+    Rel(user, timesale_api, "상품 조회 및 구매 요청", "HTTPS")
+    Rel(timesale_api, database, "데이터 CRUD 요청", "SQL")
+    Rel(timesale_api, cache_service, "재고 및 주문 상태 캐싱/조회", "Redis Protocol")
+    Rel(timesale_api, message_queue, "주문 처리 이벤트 발행", "Kafka Protocol")
+
+
+```
+
 ## 2.3 Overall Operation (전체 동작방식)
 
 ## 2.4 Product Functions (제품 주요 기능)
