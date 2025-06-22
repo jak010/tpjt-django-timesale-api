@@ -13,17 +13,22 @@ class TimeSaleService(ITimeSaleService):
 
     @transaction.atomic()
     def create_timesale(self, command: TimeSaleCreateRequestDto) -> TimeSale:
-        """ timesale 생성하기
+        """ 타임세일 생성하기
 
         Implementation
             `command` 객체에 포함된 상품 ID, 수량, 할인 가격, 시작/종료 시간을 사용하여 유효한 타임세일(TimeSale) 엔티티를 생성하고 저장한 뒤, 이를 반환
 
-        Ref
-            - 테스트 참조 : test_timesale_service.py
-
         Side Effects
-            - 새로운 `TimeSale` 엔티티가 데이터베이스에 생성 및 저장됩니다.
-            - 유효하지 않은 입력(예: 존재하지 않는 상품 ID, 유효하지 않은 시간 범위, 0 이하의 수량/할인 가격)의 경우 예외가 발생하여 타임세일 생성이 실패할 수 있습니다.
+        - 새로운 `TimeSale` 엔티티가 데이터베이스에 생성 및 저장됩니다.
+        - 유효하지 않은 입력(예: 존재하지 않는 상품 ID, 유효하지 않은 시간 범위, 0 이하의 수량/할인 가격)의 경우 예외가 발생하여 타임세일 생성이 실패할 수 있습니다.
+
+        Ref
+            Test Cases : test_timesale_service.py
+                - `test_create_timesale_success`: 타임세일 생성이 정상적으로 수행되는 경우
+                - `test_create_timesale_fail_due_to_invalid_time`: 시작 시간이 종료 시간보다 늦은 경우 예외가 발생하는지를 테스트합니다.
+                - `test_create_timesale_with_not_exit_product`: 존재하지 않은 상품으로 타임세일 생성 시 예외가 발생하는지 테스트
+                - `test_create_timesale_fail_due_to_invalid_quantity`: 수량이 0 이하일 때 예외가 발생하는지를 테스트합니다.
+                - `test_create_timesale_fail_due_to_invalid_discount_price`: 할인 가격이 0 이하일 때 예외가 발생하는지를 테스트합니다.
         """
         command.is_valid(raise_exception=True)
 
