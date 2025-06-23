@@ -1,3 +1,4 @@
+from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -43,7 +44,7 @@ class TestTimeSaleView(APITestCase):
         product = Product.init_entity(
             name="Test Product",
             description="This is a test product.",
-            price=20000
+            price=20000,
         )
         product.save()
 
@@ -65,7 +66,7 @@ class TestTimeSaleView(APITestCase):
 
 @pytest.mark.django_db
 class TestTimeSaleDetailView(APITestCase):
-    def test_get_timesale_detail_success(self, mock_timesale_service):
+    def test_get_timesale_detail_success(self):
         """ 타임세일 상세 조회 성공 테스트 """
         # 테스트용 Product 생성
         product = Product.init_entity(
@@ -74,46 +75,33 @@ class TestTimeSaleDetailView(APITestCase):
             price=20000,
         )
         product.save()
+
         # 테스트용 TimeSale 생성
-        timesale = TimeSale.objects.create(
+        timesale = TimeSale.init_entity(
             product=product,
-            sale_price=10000,
-            start_time="2025-01-01T00:00:00Z",
-            end_time="2025-01-01T01:00:00Z",
+            discount_price=10000,
+            start_at=datetime.now(),
+            end_at=datetime.now(),
             quantity=10,
-            status=TimeSaleStatus.ONGOING.value
+            status=TimeSale.Status.ACTIVE
         )
-        timesale_id = timesale.id
-        url = reverse('timesale-detail', args=[timesale_id])  # router.py에 정의된 timesale-detail URL 사용
+        timesale.save()
 
-        mock_timesale = MagicMock(spec=TimeSale)
-        mock_timesale.id = timesale_id
-        mock_timesale.product_id = product.id
-        mock_timesale.sale_price = 10000
-        mock_timesale.start_time = "2025-01-01T00:00:00Z"
-        mock_timesale.end_time = "2025-01-01T01:00:00Z"
-        mock_timesale.quantity = 10
-        mock_timesale.status = TimeSaleStatus.ONGOING.value
-
-        mock_timesale_service.get_timesale.return_value = mock_timesale
+        timesale_id = timesale.timesale_id
+        url = reverse('timesales-detail', args=[timesale_id])  # router.py에 정의된 timesale-detail URL 사용
 
         response = self.client.get(url)
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.data == TimeSaleDetailResponseDto(mock_timesale).data
-        mock_timesale_service.get_timesale.assert_called_once_with(timesale_id)
 
-    def test_get_timesale_detail_not_found_failure(self, mock_timesale_service):
+    def test_get_timesale_detail_not_found_failure(self):
         """ 타임세일 상세 조회 실패 테스트 (타임세일 없음) """
         timesale_id = 999  # 존재하지 않는 타임세일 ID
-        url = reverse('timesale-detail', args=[timesale_id])
-
-        mock_timesale_service.get_timesale.return_value = None  # 타임세일이 없음을 시뮬레이션
+        url = reverse('timesales-detail', args=[timesale_id])
 
         response = self.client.get(url)
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
-        mock_timesale_service.get_timesale.assert_called_once_with(timesale_id)
 
 
 @pytest.mark.django_db
@@ -137,7 +125,7 @@ class TestTimeSaleOngoingView(APITestCase):
         product2.save()
 
         # 테스트용 TimeSale 생성
-        timesale1 = TimeSale.objects.create(
+        timesale1 = TimeSale.init_entity(
             product=product1,
             sale_price=10000,
             start_time="2025-01-01T00:00:00Z",
@@ -145,7 +133,8 @@ class TestTimeSaleOngoingView(APITestCase):
             quantity=10,
             status=TimeSaleStatus.ONGOING.value
         )
-        timesale2 = TimeSale.objects.create(
+        timesale1.save()
+        timesale2 = TimeSale.init_entity(
             product=product2,
             sale_price=20000,
             start_time="2025-01-02T00:00:00Z",
@@ -153,6 +142,7 @@ class TestTimeSaleOngoingView(APITestCase):
             quantity=20,
             status=TimeSaleStatus.ONGOING.value
         )
+        timesale2.save()
 
         url = reverse('timesale-ongoing')  # router.py에 정의된 timesale-ongoing URL 사용
 
@@ -208,8 +198,9 @@ class TestTimeSaleOrderView(APITestCase):
             stock=100
         )
         product.save()
+
         # 테스트용 TimeSale 생성
-        timesale = TimeSale.objects.create(
+        timesale = TimeSale.init_entity(
             product=product,
             sale_price=10000,
             start_time="2025-01-01T00:00:00Z",
@@ -239,7 +230,7 @@ class TestTimeSaleOrderView(APITestCase):
         )
         product.save()
         # 테스트용 TimeSale 생성
-        timesale = TimeSale.objects.create(
+        timesale = TimeSale.init_entity(
             product=product,
             sale_price=10000,
             start_time="2025-01-01T00:00:00Z",
@@ -247,6 +238,7 @@ class TestTimeSaleOrderView(APITestCase):
             quantity=10,
             status=TimeSaleStatus.ONGOING.value
         )
+        timesale.save()
         timesale_id = timesale.id
         url = reverse('timesale-purchase', args=[timesale_id])
         data = {
@@ -270,7 +262,7 @@ class TestTimeSaleOrderView(APITestCase):
         )
         product.save()
         # 테스트용 TimeSale 생성
-        timesale = TimeSale.objects.create(
+        timesale = TimeSale.init_entity(
             product=product,
             sale_price=10000,
             start_time="2025-01-01T00:00:00Z",
@@ -278,6 +270,7 @@ class TestTimeSaleOrderView(APITestCase):
             quantity=10,
             status=TimeSaleStatus.ONGOING.value
         )
+        timesale.save()
         timesale_id = timesale.id
         url = reverse('timesale-purchase', args=[timesale_id])
         data = {

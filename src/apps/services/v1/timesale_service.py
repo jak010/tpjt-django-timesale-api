@@ -60,9 +60,11 @@ class TimeSaleService(ITimeSaleService):
             Exception: 해당 `timesale_id`를 가진 타임세일이 없을 경우 "TimeSale Not Found" 예외를 발생시킵니다.
         """
 
+        from rest_framework.exceptions import NotFound
+
         timesale = TimeSale.objects.filter(timesale_id=timesale_id).first()
         if timesale is None:
-            raise Exception("TimeSale Not Found")
+            raise NotFound()
         return timesale
 
     def get_ongoing_timesales(self, page: int, size: int):
