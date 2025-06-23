@@ -124,6 +124,7 @@ class TimeSaleService(ITimeSaleService):
         try:
             timesale.purchase(command.validated_data["quantity"])
         except Exception as e:
+            print(e)
             raise APIException()
 
         timesale.save()
