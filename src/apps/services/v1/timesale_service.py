@@ -49,8 +49,16 @@ class TimeSaleService(ITimeSaleService):
         return timesale
 
     def get_timesale(self, timesale_id: int) -> TimeSale:
-        """ 타임세일 조회하기
+        """ 특정 타임세일 정보를 조회합니다.
 
+        Args:
+            timesale_id (int): 조회할 타임세일의 고유 ID.
+
+        Returns:
+            TimeSale: 조회된 TimeSale 엔티티.
+
+        Raises:
+            Exception: 해당 `timesale_id`를 가진 타임세일이 없을 경우 "TimeSale Not Found" 예외를 발생시킵니다.
         """
 
         timesale = TimeSale.objects.filter(timesale_id=timesale_id).first()
@@ -82,9 +90,30 @@ class TimeSaleService(ITimeSaleService):
         )
 
     @transaction.atomic()
-    def purchase_time_sale(self, timesale_id: int, command: TimeSalePurchaseRequestDto):
+    def purchase_time_sale(self, timesale_id: int, command: TimeSalePurchaseRequestDto) -> TimeSale:
         """ 타임 세일 상품 구매하기
 
+        이 함수는 특정 타임세일 상품을 구매하는 로직을 처리합니다.
+        구매 요청의 유효성을 검사하고, 타임세일 재고를 업데이트하며, 구매 주문을 생성합니다.
+
+        Args:
+            timesale_id (int): 구매할 타임세일 상품의 고유 ID.
+            command (TimeSalePurchaseRequestDto): 구매 요청에 필요한 정보를 담고 있는 DTO 객체.
+                (예: 구매 수량, 사용자 ID 등)
+
+        Returns:
+            TimeSale: 구매가 완료된 타임세일 엔티티.
+
+        Raises:
+            Exception:
+                - `timesale_id`에 해당하는 타임세일 상품을 찾을 수 없을 경우 "TimeSale Not Found" 예외를 발생시킵니다.
+                - 구매 수량이 타임세일 재고를 초과하는 경우 `timesale.purchase()` 메서드 내부에서 예외가 발생할 수 있습니다.
+                - `command` 객체의 유효성 검사에 실패할 경우 예외가 발생합니다.
+
+        Side Effects:
+            - `TimeSale` 엔티티의 `quantity` 필드가 구매 수량만큼 감소합니다.
+            - 새로운 `TimeSaleOrder` 엔티티가 데이터베이스에 생성 및 저장됩니다.
+            - 데이터베이스 트랜잭션 내에서 모든 작업이 원자적으로 처리됩니다.
         """
         command.is_valid(raise_exception=True)
 
@@ -108,6 +137,20 @@ class TimeSaleService(ITimeSaleService):
 
     @classmethod
     def _validate_time_sale(cls, quantity: int, discount_price: int, start_at: datetime.datetime, end_at: datetime.datetime):
+        """ 타임세일 생성에 필요한 값들을 검증합니다.
+
+        Args:
+            quantity (int): 타임세일 상품의 수량. 0보다 커야 합니다.
+            discount_price (int): 타임세일 상품의 할인 가격. 0보다 커야 합니다.
+            start_at (datetime.datetime): 타임세일 시작 시간.
+            end_at (datetime.datetime): 타임세일 종료 시간. 시작 시간보다 늦어야 합니다.
+
+        Raises:
+            Exception:
+                - `end_at`이 `start_at`보다 빠를 경우 "End At must be greater than Start At" 예외를 발생시킵니다.
+                - `quantity`가 0 이하일 경우 "Quantity must be greater than 0" 예외를 발생시킵니다.
+                - `discount_price`가 0 이하일 경우 "Discount Price must be greater than 0" 예외를 발생시킵니다.
+        """
         if start_at > end_at:
             raise Exception("End At must be greater than Start At")
 
