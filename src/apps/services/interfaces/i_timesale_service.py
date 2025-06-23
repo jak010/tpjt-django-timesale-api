@@ -8,7 +8,17 @@ class ITimeSaleService:
 
     @abstractmethod
     def create_timesale(self, command: TimeSaleCreateRequestDto):
-        """ 시간할인 생성하기 """
+        """ 시간할인 생성하기
+
+
+        Ref
+            Test Cases : test_timesale_service.py
+                - `test_create_timesale_success`: 타임세일 생성이 정상적으로 수행되는 경우
+                - `test_create_timesale_fail_due_to_invalid_time`: 시작 시간이 종료 시간보다 늦은 경우 예외가 발생하는지를 테스트합니다.
+                - `test_create_timesale_with_not_exit_product`: 존재하지 않은 상품으로 타임세일 생성 시 예외가 발생하는지 테스트
+                - `test_create_timesale_fail_due_to_invalid_quantity`: 수량이 0 이하일 때 예외가 발생하는지를 테스트합니다.
+                - `test_create_timesale_fail_due_to_invalid_discount_price`: 할인 가격이 0 이하일 때 예외가 발생하는지를 테스트합니다.
+        """
         raise NotImplementedError("Method not implemented")
 
     @abstractmethod
