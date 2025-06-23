@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from datetime import datetime
 
-from src.apps.dto.timsale_dto import TimeSaleCreateRequestDto, TimeSalePurchaseRequestDto
+from apps.dto.timsale_dto import TimeSaleCreateRequestDto, TimeSalePurchaseRequestDto
 
 
 class ITimeSaleService:

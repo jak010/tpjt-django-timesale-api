@@ -3,8 +3,8 @@ import datetime
 from rest_framework.pagination import LimitOffsetPagination
 
 from apps.models import Product, TimeSale, TimeSaleOrder
-from src.apps.dto.timsale_dto import TimeSaleCreateRequestDto, TimeSalePurchaseRequestDto
-from src.apps.services.interfaces.i_timesale_service import ITimeSaleService
+from apps.dto.timsale_dto import TimeSaleCreateRequestDto, TimeSalePurchaseRequestDto
+from apps.services.interfaces.i_timesale_service import ITimeSaleService
 
 from django.db import transaction
 
@@ -23,7 +23,6 @@ class TimeSaleService(ITimeSaleService):
         - 유효하지 않은 입력(예: 존재하지 않는 상품 ID, 유효하지 않은 시간 범위, 0 이하의 수량/할인 가격)의 경우 예외가 발생하여 타임세일 생성이 실패할 수 있습니다.
 
         """
-        command.is_valid(raise_exception=True)
 
         product = Product.objects.filter(product_id=command.validated_data["product_id"]).first()
         if product is None:
