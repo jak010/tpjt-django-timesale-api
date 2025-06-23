@@ -1,12 +1,12 @@
 import datetime
 
+from django.db import transaction
+from rest_framework.exceptions import APIException
 from rest_framework.pagination import LimitOffsetPagination
 
-from apps.models import Product, TimeSale, TimeSaleOrder
 from apps.dto.timsale_dto import TimeSaleCreateRequestDto, TimeSalePurchaseRequestDto
+from apps.models import Product, TimeSale, TimeSaleOrder
 from apps.services.interfaces.i_timesale_service import ITimeSaleService
-
-from django.db import transaction
 
 
 class TimeSaleService(ITimeSaleService):
@@ -116,13 +116,16 @@ class TimeSaleService(ITimeSaleService):
             - 새로운 `TimeSaleOrder` 엔티티가 데이터베이스에 생성 및 저장됩니다.
             - 데이터베이스 트랜잭션 내에서 모든 작업이 원자적으로 처리됩니다.
         """
-        command.is_valid(raise_exception=True)
 
         timesale = TimeSale.objects.select_for_update().filter(timesale_id=timesale_id).first()
         if timesale is None:
             raise Exception("TimeSale Not Found")
 
-        timesale.purchase(command.validated_data["quantity"])
+        try:
+            timesale.purchase(command.validated_data["quantity"])
+        except Exception as e:
+            raise APIException()
+
         timesale.save()
 
         timesale_order = TimeSaleOrder.init_entity(

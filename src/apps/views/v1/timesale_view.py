@@ -76,5 +76,6 @@ class TimeSaleOrderView(APIView):
         """ 타임세일 구매하기 """
         serializer = TimeSalePurchaseRequestDto(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.service.purchase_time_sale(timesale_id, serializer.validated_data)
+
+        self.service.purchase_time_sale(timesale_id, serializer)
         return Response(status=status.HTTP_201_CREATED)
